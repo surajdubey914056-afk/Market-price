@@ -1,0 +1,512 @@
+/* ==========================================================================
+   AgriPrice AI - 3D Modern Agricultural Theme & Ultra-Rich Animations
+   ========================================================================== */
+
+:root {
+  --primary: #15803d;
+  --primary-hover: #166534;
+  --primary-light: #dcfce7;
+  --primary-glow: rgba(21, 128, 61, 0.35);
+  --secondary: #0284c7;
+  --secondary-glow: rgba(2, 132, 199, 0.35);
+  --accent-gold: #f59e0b;
+  --accent-gold-glow: rgba(245, 158, 11, 0.35);
+  --emerald-gradient: linear-gradient(135deg, #064e3b 0%, #065f46 40%, #047857 100%);
+  --gold-gradient: linear-gradient(135deg, #d97706 0%, #f59e0b 50%, #fbbf24 100%);
+  --sky-gradient: linear-gradient(135deg, #0369a1 0%, #0284c7 50%, #38bdf8 100%);
+  --card-bg: #ffffff;
+  --border-color: #e2e8f0;
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 22px;
+  --radius-xl: 30px;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: #f1f5f9;
+  color: #0f172a;
+  line-height: 1.6;
+  overflow-x: hidden;
+  background-image: 
+    radial-gradient(at 10% 10%, rgba(16, 185, 129, 0.05) 0px, transparent 50%),
+    radial-gradient(at 90% 90%, rgba(2, 132, 199, 0.05) 0px, transparent 50%);
+}
+
+/* ================= 3D Effects & Transforms ================= */
+.perspective-container {
+  perspective: 1200px;
+}
+
+.card-3d {
+  background: var(--card-bg);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transform-style: preserve-3d;
+  position: relative;
+  overflow: hidden;
+}
+
+.card-3d:hover {
+  transform: translateY(-8px) scale(1.01);
+  box-shadow: 0 25px 35px -5px rgba(0, 0, 0, 0.1), 0 0 25px rgba(16, 185, 129, 0.12);
+  border-color: #86efac;
+}
+
+/* 3D Floating animation */
+.float-3d {
+  animation: floatAnimation 4s ease-in-out infinite;
+}
+
+@keyframes floatAnimation {
+  0% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-8px) rotate(0.8deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
+
+/* Animated Glowing Border */
+.glow-border {
+  position: relative;
+  border-radius: var(--radius-lg);
+}
+
+.glow-border::before {
+  content: '';
+  position: absolute;
+  top: -2px; left: -2px; right: -2px; bottom: -2px;
+  background: linear-gradient(45deg, #10b981, #0284c7, #f59e0b, #10b981);
+  border-radius: calc(var(--radius-lg) + 2px);
+  z-index: -1;
+  background-size: 300% 300%;
+  animation: glowingBorder 8s ease infinite;
+  opacity: 0.85;
+}
+
+@keyframes glowingBorder {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ================= Top Live Mandi Ticker ================= */
+.live-ticker-wrap {
+  background: linear-gradient(90deg, #064e3b 0%, #065f46 50%, #047857 100%);
+  color: #ffffff;
+  padding: 8px 0;
+  font-size: 0.88rem;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(6, 78, 59, 0.3);
+  position: relative;
+  z-index: 1030;
+}
+
+.ticker-badge {
+  background: #10b981;
+  color: #ffffff;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.6);
+}
+
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #ffffff;
+  border-radius: 50%;
+  animation: pulseAnimation 1.5s infinite;
+}
+
+@keyframes pulseAnimation {
+  0% { transform: scale(0.9); opacity: 0.8; }
+  50% { transform: scale(1.4); opacity: 1; }
+  100% { transform: scale(0.9); opacity: 0.8; }
+}
+
+.ticker-track {
+  display: flex;
+  gap: 24px;
+  white-space: nowrap;
+  animation: tickerScroll 48s linear infinite;
+}
+
+.ticker-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes tickerScroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.ticker-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.12);
+  padding: 4px 14px;
+  border-radius: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.ticker-item:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+}
+
+/* ================= Navbar ================= */
+.custom-navbar {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+}
+
+.navbar-brand-badge {
+  background: var(--emerald-gradient);
+  color: #fff;
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.45rem;
+  box-shadow: 0 6px 14px rgba(21, 128, 61, 0.35);
+  transform: perspective(600px) rotateY(-5deg);
+}
+
+.nav-link {
+  font-weight: 600;
+  color: #334155 !important;
+  padding: 8px 14px !important;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+}
+
+.nav-link:hover, .nav-link.active {
+  color: var(--primary) !important;
+  background-color: var(--primary-light);
+  transform: translateY(-1px);
+}
+
+/* ================= Hero Section with 3D Imagery ================= */
+.hero-section {
+  background: linear-gradient(135deg, #042f2e 0%, #064e3b 40%, #065f46 70%, #0f766e 100%);
+  color: #ffffff;
+  padding: 65px 0 85px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-section::before {
+  content: '';
+  position: absolute;
+  top: -20%;
+  right: -5%;
+  width: 650px;
+  height: 650px;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.25) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.hero-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px);
+  padding: 6px 18px;
+  border-radius: 30px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.hero-title {
+  font-size: 3rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  line-height: 1.18;
+}
+
+.hero-title span {
+  background: linear-gradient(90deg, #6ee7b7, #a7f3d0, #fef08a);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-subtitle {
+  font-size: 1.15rem;
+  color: #e2e8f0;
+  max-width: 640px;
+  margin-top: 14px;
+}
+
+/* 3D Glass Hero Card */
+.hero-3d-card {
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(16px);
+  border-radius: var(--radius-xl);
+  padding: 28px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+  transform: perspective(1000px) rotateY(-4deg) rotateX(2deg);
+  transition: all 0.4s ease;
+}
+
+.hero-3d-card:hover {
+  transform: perspective(1000px) rotateY(0deg) rotateX(0deg);
+}
+
+.hero-crop-thumb {
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* ================= 3D Commodity Carousel / Grid ================= */
+.crop-card-3d {
+  background: #ffffff;
+  border-radius: var(--radius-md);
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  cursor: pointer;
+  position: relative;
+}
+
+.crop-card-3d:hover {
+  transform: translateY(-6px) scale(1.02);
+  border-color: #86efac;
+  box-shadow: 0 15px 30px rgba(21, 128, 61, 0.15);
+}
+
+.crop-card-img-wrap {
+  height: 130px;
+  overflow: hidden;
+  position: relative;
+}
+
+.crop-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.crop-card-3d:hover .crop-card-img {
+  transform: scale(1.08);
+}
+
+.crop-badge-overlay {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(6px);
+  color: #fff;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+/* ================= Forms & Interactive Controls ================= */
+.form-label-custom {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.form-select-custom, .form-control-custom {
+  border: 1.5px solid #cbd5e1;
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+  background-color: #fff;
+}
+
+.form-select-custom:focus, .form-control-custom:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(21, 128, 61, 0.15);
+  outline: none;
+}
+
+.badge-tag-btn {
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  color: #475569;
+  padding: 8px 16px;
+  border-radius: 24px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+}
+
+.badge-tag-btn:hover, .badge-tag-btn.active {
+  background: var(--emerald-gradient);
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow: 0 4px 12px rgba(21, 128, 61, 0.3);
+  transform: translateY(-2px);
+}
+
+/* ================= Prediction Output Dashboard ================= */
+.price-display-box {
+  background: #ffffff;
+  border: 1.5px solid #bbf7d0;
+  border-radius: var(--radius-md);
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+  position: relative;
+  overflow: hidden;
+}
+
+.price-large {
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.5px;
+}
+
+.trend-badge-large {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 20px;
+  border-radius: 30px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.trend-badge-large.bullish {
+  background: #dcfce7;
+  color: #15803d;
+  border: 1px solid #86efac;
+}
+
+.trend-badge-large.bearish {
+  background: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fca5a5;
+}
+
+.trend-badge-large.stable {
+  background: #f1f5f9;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+}
+
+/* Advisory Box */
+.advisory-box {
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  border-left: 6px solid #f59e0b;
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  padding: 20px 22px;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.1);
+}
+
+/* Buttons */
+.btn-primary-custom {
+  background: var(--emerald-gradient);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 13px 26px;
+  font-weight: 700;
+  font-size: 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 16px rgba(21, 128, 61, 0.3);
+}
+
+.btn-primary-custom:hover {
+  background: linear-gradient(135deg, #166534, #14532d);
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(21, 128, 61, 0.4);
+}
+
+/* ================= Tables ================= */
+.custom-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.custom-table th {
+  background: #f8fafc;
+  color: #475569;
+  font-weight: 700;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  padding: 16px;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.custom-table td {
+  padding: 16px;
+  font-size: 0.94rem;
+  border-bottom: 1px solid #e2e8f0;
+  vertical-align: middle;
+}
+
+.custom-table tr:hover td {
+  background-color: #f8fafc;
+}
+
+/* ================= Footer ================= */
+.custom-footer {
+  background: #0f172a;
+  color: #94a3b8;
+  padding: 60px 0 30px;
+  margin-top: 90px;
+  border-top: 4px solid #10b981;
+}
+
+/* Animations */
+.fade-in {
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2.2rem;
+  }
+  .hero-3d-card {
+    transform: none;
+  }
+}
