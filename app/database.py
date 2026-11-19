@@ -1,14 +1,29 @@
 """
 Database Layer for AgriPrice AI
-SQLite & SQLAlchemy ORM Models for Historical Data, Prediction Logs, and Alerts
+SQLite & SQLAlchemy ORM Models with Vercel Serverless Read-Only Protection
 """
 
 import os
+import shutil
 from datetime import datetime
 from sqlalchemy import create_engine, Column, Integer, Float, String, DateTime, Boolean, Text
 from sqlalchemy.orm import declarative_base, sessionmaker
 
-DATABASE_URL = "sqlite:///./agri_market.db"
+# Detect if running in Vercel or AWS Lambda serverless environment
+IS_SERVERLESS = os.environ.get("VERCEL") or os.environ.get("AWS_LAMBDA_FUNCTION_NAME")
+
+if IS_SERVERLESS:
+    # On Vercel, root filesystem is read-only. Only /tmp is writable.
+    db_path = "/tmp/agri_market.db"
+    orig_db = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "agri_market.db")
+    if os.path.exists(orig_db) and not os.path.exists(db_path):
+        try:
+            shutil.copy(orig_db, db_path)
+        except Exception as e:
+            print(f"[DB] Could not copy existing DB to /tmp: {e}")
+    DATABASE_URL = f"sqlite:///{db_path}"
+else:
+    DATABASE_URL = "sqlite:///./agri_market.db"
 
 engine = create_engine(
     DATABASE_URL, 
@@ -68,7 +83,10 @@ class PriceAlert(Base):
     is_active = Column(Boolean, default=True)
 
 def init_db():
-    Base.metadata.create_all(bind=engine)
+    try:
+        Base.metadata.create_all(bind=engine)
+    except Exception as e:
+        print(f"[DB] init_db warning: {e}")
 
 def get_db():
     db = SessionLocal()

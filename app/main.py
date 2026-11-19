@@ -43,11 +43,19 @@ from app.data_generator import (
 from app.ml_engine import predictor
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-MODEL_DIR = os.path.join(os.path.dirname(__file__), "saved_models")
+IS_SERVERLESS = os.environ.get("VERCEL") or os.environ.get("AWS_LAMBDA_FUNCTION_NAME")
 
-# Ensure database and models exist on startup
-init_db()
-seed_database_and_models()
+if IS_SERVERLESS:
+    MODEL_DIR = "/tmp/saved_models"
+else:
+    MODEL_DIR = os.path.join(os.path.dirname(__file__), "saved_models")
+
+# Safe startup seeding
+try:
+    init_db()
+    seed_database_and_models()
+except Exception as _e:
+    print(f"[Startup Warning] {_e}")
 
 app = FastAPI(
     title="AgriPrice AI - Market Price Prediction for Agricultural Products",
