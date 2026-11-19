@@ -129,6 +129,15 @@ function App() {
   const [searchMandi, setSearchMandi] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("All");
 
+  // Smart Harvesting System State (From Project Image Line 3)
+  const [harvestCrop, setHarvestCrop] = useState("tomato");
+  const [harvestMaturity, setHarvestMaturity] = useState(88);
+  const [harvestMoisture, setHarvestMoisture] = useState(24);
+  const [harvestWeather, setHarvestWeather] = useState("Approaching Rain in 48h");
+  const [harvestAcres, setHarvestAcres] = useState(2.5);
+  const [harvestResult, setHarvestResult] = useState(null);
+  const [isCalculatingHarvest, setIsCalculatingHarvest] = useState(false);
+
   const chartRef = useRef(null);
   const chartInstanceRef = useRef(null);
 
@@ -404,6 +413,28 @@ function App() {
     } catch {}
   };
 
+  // Smart Harvesting Advisory
+  const handleCalculateHarvest = async () => {
+    setIsCalculatingHarvest(true);
+    try {
+      const res = await fetch("/api/harvest-advisory", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          commodity: harvestCrop,
+          maturity_percentage: harvestMaturity,
+          soil_moisture_percentage: harvestMoisture,
+          weather_forecast: harvestWeather,
+          farm_area_acres: harvestAcres
+        })
+      });
+      const data = await res.json();
+      setHarvestResult(data);
+    } catch {} finally {
+      setIsCalculatingHarvest(false);
+    }
+  };
+
   // Filter Mandi
   const filteredMandiRows = useMemo(() => {
     return mandiPrices.filter(row => {
@@ -468,6 +499,11 @@ function App() {
               <li className="nav-item">
                 <a className={`nav-link ${activeTab === 'storage' ? 'active' : ''}`} href="#storage" onClick={() => setActiveTab('storage')}>
                   <i className="fa-solid fa-warehouse me-1 text-secondary"></i> Cold Storage
+                </a>
+              </li>
+              <li className="nav-item">
+                <a className={`nav-link ${activeTab === 'harvest' ? 'active' : ''}`} href="#harvest" onClick={() => { setActiveTab('harvest'); if (!harvestResult) handleCalculateHarvest(); }}>
+                  <i className="fa-solid fa-tractor me-1 text-success"></i> Smart Harvest
                 </a>
               </li>
               <li className="nav-item ms-lg-2">
@@ -759,7 +795,7 @@ function App() {
                           {predictionResult.market}, {predictionResult.state} • <strong>{predictionResult.forecast_days} Days Forecast</strong>
                         </div>
                       </div>
-                      <div>
+                      <div className="d-flex align-items-center gap-2">
                         <span className={`trend-badge-large ${
                           predictionResult.price_change_percentage >= 3 ? 'bullish' : 
                           (predictionResult.price_change_percentage <= -3 ? 'bearish' : 'stable')
@@ -770,6 +806,13 @@ function App() {
                           }`}></i>
                           {predictionResult.trend_direction}
                         </span>
+                        <button 
+                          className="btn btn-sm btn-outline-secondary rounded-pill px-3"
+                          onClick={() => window.print()}
+                          title="Print or Save Official Market Advisory as PDF"
+                        >
+                          <i className="fa-solid fa-print me-1"></i> Print / PDF
+                        </button>
                       </div>
                     </div>
 
@@ -1291,6 +1334,129 @@ function App() {
                   ) : (
                     <div className="text-center py-5 text-muted">
                       <p>Adjust inputs on the left and click Calculate ROI Simulation.</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* ================= TAB 7: SMART HARVESTING & SENSORS ================= */}
+        {activeTab === 'harvest' && (
+          <section id="harvest" className="mb-5 pt-2 fade-in">
+            <div className="row g-4">
+              <div className="col-lg-5">
+                <div className="card-3d p-4 h-100">
+                  <div className="d-flex align-items-center gap-2 mb-3">
+                    <div className="badge bg-success p-2 rounded-3 text-white">
+                      <i className="fa-solid fa-tractor fs-5"></i>
+                    </div>
+                    <div>
+                      <h4 className="fw-bolder text-dark mb-0">Smart Harvesting Advisory</h4>
+                      <span className="text-muted small">ML + Real-time Soil & Climate Sensors</span>
+                    </div>
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="form-label small fw-bold">Target Crop</label>
+                    <select className="form-select" value={harvestCrop} onChange={(e) => setHarvestCrop(e.target.value)}>
+                      <option value="tomato">Tomato (Perishable)</option>
+                      <option value="wheat">Wheat (Grain Maturity)</option>
+                      <option value="onion">Onion (Bulb Hardiness)</option>
+                      <option value="potato">Potato (Tuber Skin Set)</option>
+                      <option value="cotton">Cotton (Boll Opening)</option>
+                    </select>
+                  </div>
+
+                  <div className="mb-3">
+                    <div className="d-flex justify-content-between small fw-bold">
+                      <span>Crop Maturity / Brix Index</span>
+                      <span className="text-success">{harvestMaturity}%</span>
+                    </div>
+                    <input type="range" className="form-range" min="50" max="100" value={harvestMaturity} onChange={(e) => setHarvestMaturity(Number(e.target.value))} />
+                  </div>
+
+                  <div className="mb-3">
+                    <div className="d-flex justify-content-between small fw-bold">
+                      <span>Soil Moisture Sensor</span>
+                      <span className="text-primary">{harvestMoisture}%</span>
+                    </div>
+                    <input type="range" className="form-range" min="10" max="50" value={harvestMoisture} onChange={(e) => setHarvestMoisture(Number(e.target.value))} />
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="form-label small fw-bold">48-Hour Weather Forecast Radar</label>
+                    <select className="form-select" value={harvestWeather} onChange={(e) => setHarvestWeather(e.target.value)}>
+                      <option value="Clear Sky">Clear Sky / Dry Sunny Spell</option>
+                      <option value="Approaching Rain in 48h">Approaching Rain / Thunderstorm in 48h</option>
+                      <option value="High Humidity">High Humidity / Morning Dew Risk</option>
+                    </select>
+                  </div>
+
+                  <div className="mb-4">
+                    <div className="d-flex justify-content-between small fw-bold">
+                      <span>Farm Area (Acres)</span>
+                      <span className="text-dark">{harvestAcres} Acres</span>
+                    </div>
+                    <input type="range" className="form-range" min="0.5" max="25" step="0.5" value={harvestAcres} onChange={(e) => setHarvestAcres(Number(e.target.value))} />
+                  </div>
+
+                  <button className="btn btn-success w-100 py-3 fw-bold rounded-3 shadow-sm" onClick={handleCalculateHarvest} disabled={isCalculatingHarvest}>
+                    {isCalculatingHarvest ? (
+                      <><span className="spinner-border spinner-border-sm me-2"></span>Computing...</>
+                    ) : (
+                      <><i className="fa-solid fa-wheat-awn me-2"></i>Compute Optimal Harvest Timing</>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              <div className="col-lg-7">
+                <div className="card-3d p-4 h-100">
+                  <h4 className="fw-bolder text-dark mb-3">AI Sensor Harvesting Recommendation</h4>
+                  {harvestResult ? (
+                    <div>
+                      <div className={`p-4 rounded-3 mb-4 bg-${harvestResult.badge_color}-subtle border border-${harvestResult.badge_color}`}>
+                        <div className="d-flex justify-content-between align-items-center mb-1">
+                          <span className="small fw-bold text-uppercase">HARVEST VERDICT</span>
+                          <span className={`badge bg-${harvestResult.badge_color} text-white px-3 py-1 rounded-pill`}>
+                            {harvestResult.status_badge}
+                          </span>
+                        </div>
+                        <h4 className="fw-bolder text-dark mb-2">{harvestResult.decision}</h4>
+                        <p className="small mb-0 text-dark opacity-90 leading-relaxed">{harvestResult.rationale}</p>
+                      </div>
+
+                      <div className="row g-2 text-center mb-3">
+                        <div className="col-4 p-2 bg-light rounded-3 border">
+                          <span className="small text-muted d-block">Est. Farm Output</span>
+                          <strong className="text-dark">{harvestResult.total_estimated_yield_qtl} Qtl</strong>
+                        </div>
+                        <div className="col-4 p-2 bg-light rounded-3 border">
+                          <span className="small text-muted d-block">Current Mandi Rate</span>
+                          <strong className="text-primary">₹{Math.round(harvestResult.current_market_price).toLocaleString()}</strong>
+                        </div>
+                        <div className="col-4 p-2 bg-light rounded-3 border">
+                          <span className="small text-muted d-block">Gross Harvest Value</span>
+                          <strong className="text-success">₹{Math.round(harvestResult.estimated_harvest_revenue).toLocaleString()}</strong>
+                        </div>
+                      </div>
+
+                      <div className="p-3 border rounded-3 bg-white">
+                        <div className="small fw-bold text-dark mb-2">Live Sensor Telemetry Reading:</div>
+                        <ul className="small text-muted mb-0 ps-3">
+                          <li>Soil Moisture: <strong>{harvestResult.sensor_telemetry.soil_moisture}</strong></li>
+                          <li>Crop Maturity: <strong>{harvestResult.sensor_telemetry.crop_maturity}</strong></li>
+                          <li>Weather Risk: <strong>{harvestResult.sensor_telemetry.weather_risk}</strong></li>
+                        </ul>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-center py-5 text-muted">
+                      <i className="fa-solid fa-satellite-dish fa-3x mb-3 text-secondary opacity-50"></i>
+                      <h5>Awaiting Sensor Inputs</h5>
+                      <p className="small">Set your crop maturity index and weather forecast to get real-time harvesting timing advice.</p>
                     </div>
                   )}
                 </div>
