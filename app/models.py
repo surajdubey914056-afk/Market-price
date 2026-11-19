@@ -133,3 +133,11 @@ class ModelMetricsResponse(BaseModel):
     last_trained: str
     features: List[str]
     status: str
+
+class ArbitrageRequest(BaseModel):
+    commodity: str = Field("onion", description="Crop id")
+    origin_state: str = Field("Maharashtra", description="Source state")
+    destination_state: str = Field("Uttar Pradesh", description="Target destination state")
+    truck_load_quintals: float = Field(100.0, ge=10.0, le=500.0, description="Truck load in quintals")
+    distance_km: float = Field(650.0, ge=50.0, le=3000.0, description="Transit distance in km")
+    freight_rate_per_km: float = Field(38.0, ge=15.0, le=100.0, description="Truck freight cost per km")
