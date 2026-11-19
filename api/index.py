@@ -4,7 +4,6 @@ Vercel Serverless Function Entry Point for FastAPI
 import sys
 import os
 
-# Add root directory to sys.path so app imports work seamlessly on Vercel
 current_dir = os.path.dirname(os.path.abspath(__file__))
 root_dir = os.path.dirname(current_dir)
 if root_dir not in sys.path:

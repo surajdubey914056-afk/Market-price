@@ -87,6 +87,9 @@ class HarvestSensorRequest(BaseModel):
     weather_forecast: str = Field("Clear Sky", description="Clear Sky, Approaching Rain in 48h, or High Humidity")
     farm_area_acres: float = Field(2.5, ge=0.5, le=100.0, description="Farm size in acres")
 
+@app.get("/api/index.py", response_class=HTMLResponse)
+@app.get("/api/index", response_class=HTMLResponse)
+@app.get("/api", response_class=HTMLResponse)
 @app.get("/", response_class=HTMLResponse)
 async def serve_index(request: Request):
     return templates.TemplateResponse(request=request, name="index.html", context={})
